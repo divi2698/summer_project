@@ -1,16 +1,20 @@
 import xml.etree.ElementTree as ET
 import csv
+import json
+from decimal import Decimal
 
 tree = ET.parse("map.xml")
 root = tree.getroot()
 
 # open a file for writing
 
-mapData = open('map_data.csv','w')
+# mapData = open('map_data.csv','w')
+
+
 
 # create the csv writer object
 
-csvwriter = csv.writer(mapData)
+# csvwriter = csv.writer(mapData)
 # resident_head = []
 # count = 0
 
@@ -46,7 +50,7 @@ for way in rootTag:
             print("\n")
             print("\n")
             wayDict={}
-            flag = flag + 1
+            flag = 1
             wayDict['value']=tag.attrib['v']
             wayDict['id']=way.attrib['id']
             for subTag in tags:
@@ -81,17 +85,23 @@ for way in rootTag:
                         nodesKeyArray.append(latLong)
                         # print()
                         break
-            # wayDict['nodesKey']=count
+            wayDict['nodesKey']=nodesKeyArray
             wayDict['count']=count
+
+            # print json.dumps(wayDict, ensure_ascii=False,indent=4)
             waysArray.append(wayDict)
+            with open('data.json', 'w') as outfile:  
+                json.dump(wayDict, outfile,ensure_ascii=False,indent=4)
             print(count)
         break
 
     print("count of Highways is",countHighway)              
     print("count of ways is",countWay)              
-    print("count of ways with name is",countName)              
+    print("count of ways with a name is",countName)              
         
     # flag = flag+1
+    if flag==1:
+        break
             
                         
 print(len(waysArray)," waysArray")
@@ -137,4 +147,4 @@ print(len(waysArray)," waysArray")
 # 	csvwriter.writerow(resident)
 
 
-mapData.close()
+# mapData.close()
