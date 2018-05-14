@@ -21,22 +21,42 @@ print("total ways are",len(rootTag))
 
 # a=[ node for node in root.findall('way') if node.findtext('tag')]
 waysArray=[]
-wayDict={}
+
 nodesKeyArray=[]
-latLong={}
+
+wayDict={}
 
 
 count=0
 flag=0
+countWay=0
+countHighway=0
+countName=0
 for way in rootTag:
     # print("in for loop")
     tags=way.findall('tag')
-    
+    countWay=countWay+1
     # print(len(tags))
     for tag in tags:
      
+        
+        
         if tag.attrib['k']=='highway':
-            flag=1
+            countHighway=countHighway+1
+            print("\n")
+            print("\n")
+            wayDict={}
+            flag = flag + 1
+            wayDict['value']=tag.attrib['v']
+            wayDict['id']=way.attrib['id']
+            for subTag in tags:
+                if subTag.attrib['k']=='name':
+                    countName = countName + 1
+                    wayDict['name']=subTag.attrib['v']
+
+
+
+
             # print("dfgfdkg")
             # count=count+1
             # wayDict['value']=tag.attrib['value']
@@ -45,31 +65,39 @@ for way in rootTag:
             print("total nds are",len(nds))
             count=0
             for nd in nds:
-                print("ref ",nd.attrib)
+                # print("ref ",nd.attrib)
                 for node in nodes:
                     # count=count+1
                     
                     if nd.attrib['ref']==node.attrib['id']:
                         count=count+1
                         # print("hey")
-                        print(node.attrib['lat'])
-                        print(node.attrib['lon'])
+                        latLong={}
+                        # print(node.attrib['lat'])
+                        # print(node.attrib['lon'])
                         latLong['lat']=node.attrib['lat']
                         latLong['lon']=node.attrib['lon']
                         # print(latLong)
                         nodesKeyArray.append(latLong)
                         # print()
                         break
-        wayDict['nodesKey']=nodesKeyArray
-        break              
-    waysArray.append(wayDict)
-    if flag==1:
-        break         
+            # wayDict['nodesKey']=count
+            wayDict['count']=count
+            waysArray.append(wayDict)
+            print(count)
+        break
+
+    print("count of Highways is",countHighway)              
+    print("count of ways is",countWay)              
+    print("count of ways with name is",countName)              
+        
+    # flag = flag+1
+            
                         
-print(waysArray)
+print(len(waysArray)," waysArray")
 
     # break
-print(count)
+# print(count+1)
 
 # for member in root.findall('tag'):
 	# if rootTag.get('k') == 'highway':
