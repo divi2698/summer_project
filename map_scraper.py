@@ -21,21 +21,24 @@ root = tree.getroot()
 nodes= root.findall('node')
 print("length of nodes is ",len(nodes))
 rootTag=root.findall('way')
-print("total ways are",len(rootTag))
+noOfWays=len(rootTag)
+print("total ways are",noOfWays)
 
 # a=[ node for node in root.findall('way') if node.findtext('tag')]
 waysArray=[]
 
-nodesKeyArray=[]
+
 
 wayDict={}
 
+fileNames=[]
 
 count=0
 flag=0
 countWay=0
 countHighway=0
 countName=0
+index=0
 for way in rootTag:
     # print("in for loop")
     tags=way.findall('tag')
@@ -50,14 +53,35 @@ for way in rootTag:
             print("\n")
             print("\n")
             wayDict={}
-            flag = 1
+            flag = flag+1
             wayDict['value']=tag.attrib['v']
             wayDict['id']=way.attrib['id']
+            
+            i=0
+            while(i<len(fileNames)):
+                if fileNames[i]==tag.attrib['v']+".json":
+                    index=i
+                    print("found index value is ",index)
+                    break
+                i=i+1
+            
+            if i==(len(fileNames)):
+                v= tag.attrib['v']+".json"
+                print("v is ",v)
+                fileNames.append(v)
+                print(" not found file appended ",fileNames)
+                index=i
+                print("not found index value is ",index)
+
+            print("file name array is ",fileNames)
+
+
             for subTag in tags:
                 if subTag.attrib['k']=='name':
                     countName = countName + 1
                     wayDict['name']=subTag.attrib['v']
 
+            
 
 
 
@@ -66,8 +90,9 @@ for way in rootTag:
             # wayDict['value']=tag.attrib['value']
             # wayDict['id']=way.attrib['id']
             nds= way.findall('nd')
-            print("total nds are",len(nds))
+            print("Total nds are :",len(nds))
             count=0
+            nodesKeyArray=[]
             for nd in nds:
                 # print("ref ",nd.attrib)
                 for node in nodes:
@@ -79,29 +104,35 @@ for way in rootTag:
                         latLong={}
                         # print(node.attrib['lat'])
                         # print(node.attrib['lon'])
-                        latLong['lat']=node.attrib['lat']
-                        latLong['lon']=node.attrib['lon']
+                        latLong['lat']=float(node.attrib['lat'])
+                        latLong['lng']=float(node.attrib['lon'])
                         # print(latLong)
                         nodesKeyArray.append(latLong)
                         # print()
                         break
+                
+
             wayDict['nodesKey']=nodesKeyArray
             wayDict['count']=count
 
             # print json.dumps(wayDict, ensure_ascii=False,indent=4)
             waysArray.append(wayDict)
-            with open('data.json', 'w') as outfile:  
+            
+            with open('data/'+fileNames[index], 'a+') as outfile: 
+                print("file name is ",fileNames[index])
                 json.dump(wayDict, outfile,ensure_ascii=False,indent=4)
             print(count)
-        break
-
-    print("count of Highways is",countHighway)              
-    print("count of ways is",countWay)              
-    print("count of ways with a name is",countName)              
+            break
+    # print("\n")
+    print("\n")
+    print("No of Highways:",countHighway)              
+    print("Count of ways :",countWay)              
+    print("Named Highways:",countName)
+    print("Progress      : ",round((float(countWay)/float(noOfWays))*100.0,2)," percent")              
         
-    # flag = flag+1
-    if flag==1:
-        break
+    
+    # if flag==22:
+    #     break
             
                         
 print(len(waysArray)," waysArray")
