@@ -39,12 +39,15 @@ xAcc=[]
 yAcc=[]
 zAcc=[]
 rAcc=[]
+timeArray=[]
+dateArray=[]
 while(i<len(lines)):
     
     l=lines[i]
     dateTime=l[3]
     # print(dateTime)
     dateTime=dateTime.split(' ')
+    date=dateTime[0]
     time=dateTime[1]
     
     timeSeconds=get_sec(time)
@@ -104,6 +107,9 @@ while(i<len(lines)):
             yAcc.append(l[1])
             zAcc.append(l[2])
             rAcc.append(m.sqrt(float(l[0])*float(l[0])+float(l[1])*float(l[1])+float(l[2])*float(l[2])))
+            
+            dateArray.append(prevDate)
+            timeArray.append(prevTimeInFormat)
     else:
             xAcc.append(l[0])
             yAcc.append(l[1])
@@ -112,7 +118,8 @@ while(i<len(lines)):
         
 
     prevTime=t
-
+    prevDate=date
+    prevTimeInFormat=time
     # print("time is ",t)
     
 
@@ -137,6 +144,9 @@ yAccArray.append(q)
 zAccArray.append(r)
 rAccArray.append(s)
 
+timeArray.append(prevTimeInFormat)
+dateArray.append(prevDate)
+
 
 # x3=x[3]
 # x3=x3.split(' ')
@@ -152,17 +162,17 @@ yAccStd=[]
 zAccStd=[]
 rAccStd=[]
 
-print("xAcc Array is ",xAccArray)
-print("xAcc Array is ",len(xAccArray))
-print("\n")
-print("yAcc Array is ",yAccArray)
-print("yAcc Array is ",len(yAccArray))
-print("\n")
-print("zAcc Array is ",zAccArray)
-print("zAcc Array is ",len(zAccArray))
-print("\n")
-print("rAcc Array is ",rAccArray)
-print("rAcc Array is ",len(rAccArray))
+# print("xAcc Array is ",xAccArray)
+# print("xAcc Array is ",len(xAccArray))
+# print("\n")
+# print("yAcc Array is ",yAccArray)
+# print("yAcc Array is ",len(yAccArray))
+# print("\n")
+# print("zAcc Array is ",zAccArray)
+# print("zAcc Array is ",len(zAccArray))
+# print("\n")
+# print("rAcc Array is ",rAccArray)
+# print("rAcc Array is ",len(rAccArray))
 # print (get_sec(x3[1]))
 c=0
 
@@ -178,15 +188,16 @@ for a1 in zAccArray:
 for a1 in rAccArray:
     rAccMean.append(np.mean(a1))
 
-print('========================================================================')
-print("the mean of all the x acc is ",xAccMean)
-print("the mean of all the x acc is ",len(xAccMean))
-print("the mean of all the y acc is ",yAccMean)
-print("the mean of all the y acc is ",len(yAccMean))
-print("the mean of all the z acc is ",zAccMean)
-print("the mean of all the z acc is ",len(zAccMean))
-print("the mean of all the r acc is ",rAccMean)
-print("the mean of all the r acc is ",len(rAccMean))
+# print('========================================================================')
+# print("the mean of all the x acc is ",xAccMean)
+# print("the mean of all the x acc is ",len(xAccMean))
+# print("the mean of all the y acc is ",yAccMean)
+# print("the mean of all the y acc is ",len(yAccMean))
+# print("the mean of all the z acc is ",zAccMean)
+# print("the mean of all the z acc is ",len(zAccMean))
+# print("the mean of all the r acc is ",rAccMean)
+# print("the mean of all the r acc is ",len(rAccMean))
+
     # if c==0:
     #     print("mean is ",np.mean(x))
     # c=c+1
@@ -203,20 +214,22 @@ for a1 in zAccArray:
 for a1 in rAccArray:
     rAccStd.append(np.std(a1))
     
-print('========================================================================')
-print("the std of all the x acc is ",xAccStd)
-print("the std of all the x acc is ",len(xAccStd))
-print("the std of all the y acc is ",yAccStd)
-print("the std of all the y acc is ",len(yAccStd))
-print("the std of all the z acc is ",zAccStd)
-print("the std of all the z acc is ",len(zAccStd))
-print("the std of all the r acc is ",rAccStd)
+# print('========================================================================')
+# print("the std of all the x acc is ",xAccStd)
+# print("the std of all the x acc is ",len(xAccStd))
+# print("the std of all the y acc is ",yAccStd)
+# print("the std of all the y acc is ",len(yAccStd))
+# print("the std of all the z acc is ",zAccStd)
+# print("the std of all the z acc is ",len(zAccStd))
+# print("the std of all the r acc is ",rAccStd)
 print("the std of all the r acc is ",len(rAccStd))
 
 
 with open('acc_statistical_data.json', 'a+') as fp:
     count=0
+    fp.write('[')
     while(count<len(xAccMean)):
+    
         obj={}
         xobj={}
         yobj={}
@@ -224,6 +237,8 @@ with open('acc_statistical_data.json', 'a+') as fp:
         robj={}
 
         obj['seconds']=count
+        obj["date"]=dateArray[count]
+        obj["time"]=timeArray[count]
 
         xobj['mean']=xAccMean[count]
         xobj['standard deviation']=xAccStd[count]
@@ -242,10 +257,19 @@ with open('acc_statistical_data.json', 'a+') as fp:
         obj['resultant']=robj
         
         json.dump(obj, fp,ensure_ascii=False,indent=4)
+
+        
         if count!=len(xAccMean)-1:
             fp.write(',')
 
         count=count+1
+    fp.write(']')
+
+
+# print("date array is ",dateArray)
+print("date array is ",len(dateArray))
+# print("time array is ",timeArray)
+print("time array is ",len(timeArray))
 
 file.close()
 
