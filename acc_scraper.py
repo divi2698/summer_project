@@ -2,6 +2,7 @@
 # import time
 import numpy as np
 import json
+import math as m
 
 def get_sec(time_str):
     h, m, s = time_str.split(':')
@@ -9,7 +10,7 @@ def get_sec(time_str):
 
 
 
-file = open("Bus_ACC_2017_09_20_07_27_28_219.txt", "r")
+file = open("u/DATA_08_07_23/All/Bus_ACC_2018_02_15_08_07_28_106.txt", "r")
 line1 = file.read().splitlines()
     # print(lines)
 
@@ -33,14 +34,13 @@ i=1
 xAccArray=[]
 yAccArray=[]
 zAccArray=[]
+rAccArray=[]
 xAcc=[]
 yAcc=[]
 zAcc=[]
+rAcc=[]
 while(i<len(lines)):
-
     
-    
-
     l=lines[i]
     dateTime=l[3]
     # print(dateTime)
@@ -65,10 +65,12 @@ while(i<len(lines)):
             xAcc.append(l[0])
             yAcc.append(l[1])
             zAcc.append(l[2])
+            rAcc.append(m.sqrt(float(l[0])*float(l[0])+float(l[1])*float(l[1])+float(l[2])*float(l[2])))
         elif t==prevTime+1:
             x=[]
             y=[]
             z=[]
+            r=[]
 
             for j in xAcc:
                 x.append(float(j))
@@ -76,6 +78,9 @@ while(i<len(lines)):
                 y.append(float(j))
             for j in zAcc:
                 z.append(float(j))
+            for j in rAcc:
+                r.append(j)
+            # print("r is ",r)
             
 
             # print("x is ",x)
@@ -83,6 +88,7 @@ while(i<len(lines)):
             xAccArray.append(x)
             yAccArray.append(y)
             zAccArray.append(z)
+            rAccArray.append(r)
 
             # if i<85:
             #     print("xacc arr ", xAccArray)
@@ -90,16 +96,19 @@ while(i<len(lines)):
             xAcc.clear()
             yAcc.clear()
             zAcc.clear()
+            rAcc.clear()
 
             # print("xacc is ",xAcc)
 
             xAcc.append(l[0])
             yAcc.append(l[1])
             zAcc.append(l[2])
+            rAcc.append(m.sqrt(float(l[0])*float(l[0])+float(l[1])*float(l[1])+float(l[2])*float(l[2])))
     else:
             xAcc.append(l[0])
             yAcc.append(l[1])
             zAcc.append(l[2])
+            rAcc.append(m.sqrt(float(l[0])*float(l[0])+float(l[1])*float(l[1])+float(l[2])*float(l[2])))
         
 
     prevTime=t
@@ -112,16 +121,21 @@ while(i<len(lines)):
 p=[]
 q=[]
 r=[]
+s=[]
 for j in xAcc:
     p.append(float(j))
 for j in yAcc:
     q.append(float(j))
 for j in zAcc:
     r.append(float(j))
+for j in rAcc:
+    s.append(j)
+
 # for the last line
 xAccArray.append(p)
 yAccArray.append(q)
 zAccArray.append(r)
+rAccArray.append(s)
 
 
 # x3=x[3]
@@ -131,10 +145,12 @@ zAccArray.append(r)
 xAccMean=[]
 yAccMean=[]
 zAccMean=[]
+rAccMean=[]
 
 xAccStd=[]
 yAccStd=[]
 zAccStd=[]
+rAccStd=[]
 
 print("xAcc Array is ",xAccArray)
 print("xAcc Array is ",len(xAccArray))
@@ -144,6 +160,9 @@ print("yAcc Array is ",len(yAccArray))
 print("\n")
 print("zAcc Array is ",zAccArray)
 print("zAcc Array is ",len(zAccArray))
+print("\n")
+print("rAcc Array is ",rAccArray)
+print("rAcc Array is ",len(rAccArray))
 # print (get_sec(x3[1]))
 c=0
 
@@ -156,6 +175,9 @@ for a1 in yAccArray:
 for a1 in zAccArray:
     zAccMean.append(np.mean(a1))
 
+for a1 in rAccArray:
+    rAccMean.append(np.mean(a1))
+
 print('========================================================================')
 print("the mean of all the x acc is ",xAccMean)
 print("the mean of all the x acc is ",len(xAccMean))
@@ -163,6 +185,8 @@ print("the mean of all the y acc is ",yAccMean)
 print("the mean of all the y acc is ",len(yAccMean))
 print("the mean of all the z acc is ",zAccMean)
 print("the mean of all the z acc is ",len(zAccMean))
+print("the mean of all the r acc is ",rAccMean)
+print("the mean of all the r acc is ",len(rAccMean))
     # if c==0:
     #     print("mean is ",np.mean(x))
     # c=c+1
@@ -175,6 +199,9 @@ for a1 in yAccArray:
 
 for a1 in zAccArray:
     zAccStd.append(np.std(a1))
+
+for a1 in rAccArray:
+    rAccStd.append(np.std(a1))
     
 print('========================================================================')
 print("the std of all the x acc is ",xAccStd)
@@ -183,6 +210,8 @@ print("the std of all the y acc is ",yAccStd)
 print("the std of all the y acc is ",len(yAccStd))
 print("the std of all the z acc is ",zAccStd)
 print("the std of all the z acc is ",len(zAccStd))
+print("the std of all the r acc is ",rAccStd)
+print("the std of all the r acc is ",len(rAccStd))
 
 
 with open('acc_statistical_data.json', 'a+') as fp:
@@ -192,6 +221,7 @@ with open('acc_statistical_data.json', 'a+') as fp:
         xobj={}
         yobj={}
         zobj={}
+        robj={}
 
         obj['seconds']=count
 
@@ -206,6 +236,10 @@ with open('acc_statistical_data.json', 'a+') as fp:
         zobj['mean']=zAccMean[count]
         zobj['standard deviation']=zAccStd[count]
         obj['z']=zobj
+        
+        robj['mean']=rAccMean[count]
+        robj['standard deviation']=rAccStd[count]
+        obj['resultant']=robj
         
         json.dump(obj, fp,ensure_ascii=False,indent=4)
         if count!=len(xAccMean)-1:
